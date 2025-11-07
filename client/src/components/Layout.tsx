@@ -78,18 +78,18 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
     'Human Resources': false,
   });
 
-  // Color scheme for each category
+  // Color scheme for each category - Professional corporate palette
   const getCategoryColor = (text: string) => {
     const colors: { [key: string]: { main: string; light: string; dark: string } } = {
-      'Dashboard': { main: '#1976d2', light: '#e3f2fd', dark: '#0d47a1' },
-      'Road to Sale': { main: '#2e7d32', light: '#e8f5e9', dark: '#1b5e20' },
-      'Inventory Management': { main: '#ed6c02', light: '#fff3e0', dark: '#e65100' },
-      'F&I': { main: '#9c27b0', light: '#f3e5f5', dark: '#6a1b9a' },
-      'Service Department': { main: '#d32f2f', light: '#ffebee', dark: '#c62828' },
-      'Accounting': { main: '#0288d1', light: '#e1f5fe', dark: '#01579b' },
-      'Human Resources': { main: '#f57c00', light: '#fff3e0', dark: '#e65100' },
+      'Dashboard': { main: '#2563eb', light: '#eff6ff', dark: '#1e40af' }, // Professional Blue
+      'Road to Sale': { main: '#059669', light: '#ecfdf5', dark: '#047857' }, // Emerald Green
+      'Inventory Management': { main: '#7c3aed', light: '#f5f3ff', dark: '#6d28d9' }, // Violet
+      'F&I': { main: '#dc2626', light: '#fef2f2', dark: '#b91c1c' }, // Professional Red
+      'Service Department': { main: '#ea580c', light: '#fff7ed', dark: '#c2410c' }, // Warm Orange
+      'Accounting': { main: '#0891b2', light: '#ecfeff', dark: '#0e7490' }, // Cyan
+      'Human Resources': { main: '#4f46e5', light: '#eef2ff', dark: '#4338ca' }, // Indigo
     };
-    return colors[text] || { main: '#757575', light: '#f5f5f5', dark: '#424242' };
+    return colors[text] || { main: '#64748b', light: '#f8fafc', dark: '#475569' };
   };
 
   const menuItems: MenuItem[] = [
