@@ -78,6 +78,20 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
     'Human Resources': false,
   });
 
+  // Color scheme for each category
+  const getCategoryColor = (text: string) => {
+    const colors: { [key: string]: { main: string; light: string; dark: string } } = {
+      'Dashboard': { main: '#1976d2', light: '#e3f2fd', dark: '#0d47a1' },
+      'Road to Sale': { main: '#2e7d32', light: '#e8f5e9', dark: '#1b5e20' },
+      'Inventory Management': { main: '#ed6c02', light: '#fff3e0', dark: '#e65100' },
+      'F&I': { main: '#9c27b0', light: '#f3e5f5', dark: '#6a1b9a' },
+      'Service Department': { main: '#d32f2f', light: '#ffebee', dark: '#c62828' },
+      'Accounting': { main: '#0288d1', light: '#e1f5fe', dark: '#01579b' },
+      'Human Resources': { main: '#f57c00', light: '#fff3e0', dark: '#e65100' },
+    };
+    return colors[text] || { main: '#757575', light: '#f5f5f5', dark: '#424242' };
+  };
+
   const menuItems: MenuItem[] = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     {
@@ -169,50 +183,107 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
       </Toolbar>
       <Divider />
       <List sx={{ py: 0 }}>
-        {menuItems.map((item) => (
-          <React.Fragment key={item.text}>
-            {item.subItems ? (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={() => handleMenuToggle(item.text)}>
-                    <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+        {menuItems.map((item) => {
+          const categoryColors = getCategoryColor(item.text);
+          return (
+            <React.Fragment key={item.text}>
+              {item.subItems ? (
+                <>
+                  <ListItem 
+                    disablePadding
+                    sx={{
+                      borderLeft: `4px solid ${categoryColors.main}`,
+                      bgcolor: openMenus[item.text] ? categoryColors.light : 'transparent',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        bgcolor: categoryColors.light,
+                      },
+                    }}
+                  >
+                    <ListItemButton onClick={() => handleMenuToggle(item.text)}>
+                      <ListItemIcon 
+                        sx={{ 
+                          minWidth: 40,
+                          color: categoryColors.main,
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={item.text} 
+                        primaryTypographyProps={{ 
+                          fontSize: '0.875rem', 
+                          fontWeight: 600,
+                          color: categoryColors.dark,
+                        }}
+                      />
+                      {openMenus[item.text] ? 
+                        <ExpandLess sx={{ color: categoryColors.main }} /> : 
+                        <ExpandMore sx={{ color: categoryColors.main }} />
+                      }
+                    </ListItemButton>
+                  </ListItem>
+                  <Collapse in={openMenus[item.text]} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding sx={{ bgcolor: categoryColors.light }}>
+                      {item.subItems.map((subItem) => (
+                        <ListItemButton
+                          key={subItem.text}
+                          sx={{ 
+                            pl: 7,
+                            borderLeft: `4px solid ${categoryColors.main}`,
+                            '&:hover': {
+                              bgcolor: 'white',
+                              borderLeft: `4px solid ${categoryColors.dark}`,
+                            },
+                          }}
+                          onClick={() => handleMenuClick(subItem.path)}
+                        >
+                          <ListItemText 
+                            primary={subItem.text}
+                            primaryTypographyProps={{ 
+                              fontSize: '0.813rem',
+                              color: categoryColors.dark,
+                            }}
+                          />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Collapse>
+                </>
+              ) : (
+                <ListItem 
+                  disablePadding
+                  sx={{
+                    borderLeft: `4px solid ${categoryColors.main}`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      bgcolor: categoryColors.light,
+                    },
+                  }}
+                >
+                  <ListItemButton onClick={() => handleMenuClick(item.path!)}>
+                    <ListItemIcon 
+                      sx={{ 
+                        minWidth: 40,
+                        color: categoryColors.main,
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
                     <ListItemText 
-                      primary={item.text} 
-                      primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
+                      primary={item.text}
+                      primaryTypographyProps={{ 
+                        fontSize: '0.875rem', 
+                        fontWeight: 600,
+                        color: categoryColors.dark,
+                      }}
                     />
-                    {openMenus[item.text] ? <ExpandLess /> : <ExpandMore />}
                   </ListItemButton>
                 </ListItem>
-                <Collapse in={openMenus[item.text]} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    {item.subItems.map((subItem) => (
-                      <ListItemButton
-                        key={subItem.text}
-                        sx={{ pl: 7 }}
-                        onClick={() => handleMenuClick(subItem.path)}
-                      >
-                        <ListItemText 
-                          primary={subItem.text}
-                          primaryTypographyProps={{ fontSize: '0.813rem' }}
-                        />
-                      </ListItemButton>
-                    ))}
-                  </List>
-                </Collapse>
-              </>
-            ) : (
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => handleMenuClick(item.path!)}>
-                  <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                  <ListItemText 
-                    primary={item.text}
-                    primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 500 }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            )}
-          </React.Fragment>
-        ))}
+              )}
+            </React.Fragment>
+          );
+        })}
       </List>
     </Box>
   );
