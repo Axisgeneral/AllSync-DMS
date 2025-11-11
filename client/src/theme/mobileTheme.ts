@@ -12,6 +12,29 @@ export const mobileTheme = createTheme({
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          '@media (max-width: 600px)': {
+            '& .MuiToolbar-root': {
+              minHeight: '48px !important',
+              padding: '0 8px',
+            },
+            '& .MuiTypography-h6': {
+              fontSize: '0.875rem',
+            },
+            '& .MuiTypography-body2': {
+              fontSize: '0.65rem',
+            },
+            '& .MuiAvatar-root': {
+              width: '28px',
+              height: '28px',
+              fontSize: '0.875rem',
+            },
+          },
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

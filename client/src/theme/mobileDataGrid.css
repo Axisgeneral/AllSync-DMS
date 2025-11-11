@@ -2,51 +2,89 @@
 /* Applied automatically on screens < 600px */
 
 @media (max-width: 600px) {
+  /* Prevent body scroll on mobile */
+  html, body {
+    overflow: hidden;
+    height: 100vh;
+    position: fixed;
+    width: 100%;
+  }
+
+  #root {
+    height: 100vh;
+    overflow: hidden;
+  }
+
   .MuiDataGrid-root {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+    border: none;
   }
 
   .MuiDataGrid-columnHeaders {
-    font-size: 0.7rem;
-    min-height: 40px !important;
-    max-height: 40px !important;
+    font-size: 0.65rem;
+    min-height: 32px !important;
+    max-height: 32px !important;
   }
 
   .MuiDataGrid-cell {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-    min-height: 36px !important;
-    max-height: 36px !important;
+    font-size: 0.65rem;
+    padding: 2px 4px;
+    min-height: 32px !important;
+    max-height: 32px !important;
   }
 
   .MuiDataGrid-row {
-    min-height: 36px !important;
-    max-height: 36px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
   }
 
   .MuiDataGrid-columnHeader {
-    padding: 4px 8px;
+    padding: 2px 4px;
   }
 
   .MuiDataGrid-footerContainer {
-    min-height: 40px;
+    min-height: 36px !important;
   }
 
   .MuiDataGrid-root .MuiTablePagination-root {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
 
   .MuiDataGrid-root .MuiTablePagination-selectLabel,
   .MuiDataGrid-root .MuiTablePagination-displayedRows {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     margin: 0;
   }
 
   .MuiDataGrid-root .MuiTablePagination-select {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+  }
+
+  .MuiDataGrid-root .MuiTablePagination-toolbar {
+    min-height: 36px !important;
+    padding: 0 4px;
   }
 
   .MuiDataGrid-root .MuiIconButton-root {
-    padding: 4px;
+    padding: 2px;
+  }
+
+  .MuiDataGrid-root .MuiSvgIcon-root {
+    font-size: 1.2rem;
+  }
+
+  /* Compact chips */
+  .MuiChip-root {
+    height: 18px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .MuiChip-label {
+    padding: 0 4px !important;
+  }
+
+  .MuiChip-icon {
+    font-size: 0.8rem !important;
+    margin: 0 2px 0 -2px !important;
   }
 }

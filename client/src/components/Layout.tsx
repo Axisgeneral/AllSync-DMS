@@ -485,7 +485,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1, sm: 3 }, // Reduced padding on mobile
+          p: { xs: 0, sm: 3 }, // No padding on mobile
           width: { sm: `calc(100% - ${sidebarCollapsed ? drawerWidthCollapsed : drawerWidth}px)` },
           minHeight: '100vh',
           bgcolor: 'grey.100',
@@ -493,7 +493,9 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
         }}
       >
         <Toolbar sx={{ minHeight: { xs: '48px', sm: '64px' } }} />
-        {children}
+        <Box sx={{ p: { xs: 1, sm: 0 } }}>
+          {children}
+        </Box>
       </Box>
     </Box>
   );

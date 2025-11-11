@@ -764,40 +764,47 @@ const Customers: React.FC = () => {
       {
         field: 'name',
         headerName: 'Name',
-        width: 120,
+        width: 100,
         flex: 1,
         valueGetter: (params: any) => `${params.row.firstName} ${params.row.lastName}`,
       },
       { 
         field: 'phone', 
         headerName: 'Phone', 
-        width: 100,
+        width: 90,
       },
       {
         field: 'status',
-        headerName: 'Status',
-        width: 80,
+        headerName: 'Sts',
+        width: 60,
         renderCell: (params: GridRenderCellParams) => (
           <Chip
-            label={params.value as string}
+            label={params.value === 'Active' ? 'A' : 'I'}
             color={getStatusColor(params.value as string) as any}
             size="small"
-            sx={{ fontSize: '0.65rem', height: '20px' }}
+            sx={{ 
+              fontSize: '0.6rem', 
+              height: '18px',
+              minWidth: '28px',
+              '& .MuiChip-label': {
+                padding: '0 4px',
+              }
+            }}
           />
         ),
       },
       {
         field: 'actions',
         headerName: '',
-        width: 60,
+        width: 50,
         sortable: false,
         renderCell: (params: GridRenderCellParams) => (
           <IconButton
             size="small"
             onClick={(e) => handleMenuOpen(e, params.row as Customer)}
-            sx={{ p: 0.5 }}
+            sx={{ p: 0.25 }}
           >
-            <MoreVertIcon fontSize="small" />
+            <MoreVertIcon sx={{ fontSize: '1.1rem' }} />
           </IconButton>
         ),
       },
@@ -805,35 +812,56 @@ const Customers: React.FC = () => {
   }, [isMobile, columns]);
 
   return (
-    <Box sx={{ p: { xs: 0, sm: 'inherit' } }}>
+    <Box sx={{ 
+      p: { xs: 0, sm: 0 },
+      height: { xs: '100vh', sm: 'auto' },
+      display: { xs: 'flex', sm: 'block' },
+      flexDirection: { xs: 'column', sm: 'row' },
+      overflow: { xs: 'hidden', sm: 'visible' },
+    }}>
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        mb: { xs: 1, sm: 3 },
-        flexDirection: { xs: 'column', sm: 'row' },
-        gap: { xs: 1, sm: 0 },
+        mb: { xs: 0.5, sm: 3 },
+        p: { xs: 1, sm: 0 },
+        flexDirection: { xs: 'row', sm: 'row' },
+        gap: { xs: 0.5, sm: 0 },
+        flexShrink: 0,
       }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '2.125rem' } }}>
-          Customers {isMobile && `(${filteredCustomers.length})`}
+        <Typography variant="h4" sx={{ 
+          fontWeight: 'bold', 
+          fontSize: { xs: '1rem', sm: '2.125rem' },
+          whiteSpace: 'nowrap',
+        }}>
+          {isMobile ? `Customers (${filteredCustomers.length})` : 'Customers Management'}
         </Typography>
         <Button
           variant="contained"
           startIcon={!isMobile && <AddIcon />}
           onClick={() => handleOpen('add')}
-          size={isMobile ? 'small' : 'medium'}
-          fullWidth={isMobile}
+          size="small"
+          sx={{ 
+            minWidth: { xs: '60px', sm: 'auto' },
+            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+            padding: { xs: '4px 8px', sm: '6px 16px' },
+          }}
         >
-          {isMobile ? '+ Add' : 'Add New Customer'}
+          {isMobile ? '+' : 'Add New Customer'}
         </Button>
       </Box>
 
       {/* Search Box */}
-      <Paper sx={{ p: { xs: 1, sm: 2 }, mb: { xs: 1, sm: 3 } }}>
+      <Paper sx={{ 
+        p: { xs: 0.75, sm: 2 }, 
+        mb: { xs: 0.5, sm: 3 },
+        mx: { xs: 1, sm: 0 },
+        flexShrink: 0,
+      }}>
         <TextField
           fullWidth
-          size={isMobile ? 'small' : 'medium'}
-          placeholder={isMobile ? "Search customers..." : "Search customers by name, email, phone, address, city, state, zip, type, status, or notes..."}
+          size="small"
+          placeholder={isMobile ? "Search..." : "Search customers by name, email, phone, address, city, state, zip, type, status, or notes..."}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
@@ -934,14 +962,18 @@ const Customers: React.FC = () => {
 
       {/* Customers Data Grid */}
       <Paper sx={{ 
-        height: isMobile ? 'calc(100vh - 200px)' : 500, 
-        width: '100%',
+        height: isMobile ? 'calc(100vh - 140px)' : 500,
+        width: isMobile ? 'calc(100vw - 16px)' : '100%',
+        mx: { xs: 1, sm: 0 },
+        mb: { xs: 1, sm: 0 },
         p: { xs: 0, sm: 2 },
+        flexGrow: 1,
+        overflow: 'hidden',
       }}>
         <DataGrid
           rows={filteredCustomers}
           columns={isMobile ? mobileColumns : columns}
-          density={isMobile ? 'compact' : 'standard'}
+          density="compact"
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: isMobile ? 25 : 10 },
