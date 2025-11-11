@@ -327,7 +327,7 @@ const PartsManagement: React.FC = () => {
   };
 
   const calculateMargin = (cost: number, price: number) => {
-    if (price === 0) return 0;
+    if (price === 0) return '0.0';
     return ((price - cost) / price * 100).toFixed(1);
   };
 
