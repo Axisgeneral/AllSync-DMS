@@ -24,6 +24,8 @@ import {
   ListItemIcon,
   Divider,
   InputAdornment,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
@@ -47,6 +49,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import EventIcon from '@mui/icons-material/Event';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import { createMobileColumns, MobileColumnPresets, getMobileDialogProps } from '../utils/mobileUtils';
 
 interface Customer {
   id: number;
@@ -98,6 +102,9 @@ interface ServiceHistory {
 }
 
 const Customers: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [open, setOpen] = useState(false);
@@ -750,26 +757,84 @@ const Customers: React.FC = () => {
     },
   ];
 
+  // Mobile-optimized columns - only show essential information
+  const mobileColumns: GridColDef[] = useMemo(() => {
+    if (!isMobile) return columns;
+    
+    return [
+      {
+        field: 'name',
+        headerName: 'Name',
+        width: 120,
+        flex: 1,
+        valueGetter: (params: any) => `${params.row.firstName} ${params.row.lastName}`,
+      },
+      { 
+        field: 'phone', 
+        headerName: 'Phone', 
+        width: 100,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        width: 80,
+        renderCell: (params: GridRenderCellParams) => (
+          <Chip
+            label={params.value as string}
+            color={getStatusColor(params.value as string) as any}
+            size="small"
+            sx={{ fontSize: '0.65rem', height: '20px' }}
+          />
+        ),
+      },
+      {
+        field: 'actions',
+        headerName: '',
+        width: 60,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <IconButton
+            size="small"
+            onClick={(e) => handleMenuOpen(e, params.row as Customer)}
+            sx={{ p: 0.5 }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        ),
+      },
+    ];
+  }, [isMobile, columns]);
+
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          Customers Management
+    <Box sx={{ p: { xs: 0, sm: 'inherit' } }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: { xs: 1, sm: 3 },
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 1, sm: 0 },
+      }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '2.125rem' } }}>
+          Customers {isMobile && `(${filteredCustomers.length})`}
         </Typography>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={!isMobile && <AddIcon />}
           onClick={() => handleOpen('add')}
+          size={isMobile ? 'small' : 'medium'}
+          fullWidth={isMobile}
         >
-          Add New Customer
+          {isMobile ? '+ Add' : 'Add New Customer'}
         </Button>
       </Box>
 
       {/* Search Box */}
-      <Paper sx={{ p: 2, mb: 3 }}>
+      <Paper sx={{ p: { xs: 1, sm: 2 }, mb: { xs: 1, sm: 3 } }}>
         <TextField
           fullWidth
-          placeholder="Search customers by name, email, phone, address, city, state, zip, type, status, or notes..."
+          size={isMobile ? 'small' : 'medium'}
+          placeholder={isMobile ? "Search customers..." : "Search customers by name, email, phone, address, city, state, zip, type, status, or notes..."}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{
@@ -795,6 +860,7 @@ const Customers: React.FC = () => {
       </Paper>
 
       {/* Statistics Cards */}
+      {!isMobile && (
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card>
@@ -865,19 +931,25 @@ const Customers: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+      )}
 
       {/* Customers Data Grid */}
-      <Paper sx={{ height: 500, width: '100%' }}>
+      <Paper sx={{ 
+        height: isMobile ? 'calc(100vh - 200px)' : 500, 
+        width: '100%',
+        p: { xs: 0, sm: 2 },
+      }}>
         <DataGrid
           rows={filteredCustomers}
-          columns={columns}
+          columns={isMobile ? mobileColumns : columns}
+          density={isMobile ? 'compact' : 'standard'}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 10 },
+              paginationModel: { page: 0, pageSize: isMobile ? 25 : 10 },
             },
           }}
-          pageSizeOptions={[5, 10, 25]}
-          checkboxSelection
+          pageSizeOptions={isMobile ? [25, 50] : [5, 10, 25]}
+          checkboxSelection={!isMobile}
           onRowClick={(params) => handleOpen('view', params.row as Customer)}
           sx={{
             '& .MuiDataGrid-row': {
@@ -888,7 +960,13 @@ const Customers: React.FC = () => {
       </Paper>
 
       {/* Add/Edit Dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth="md" 
+        fullWidth
+        fullScreen={isMobile}
+      >
         <DialogTitle>
           {mode === 'add' ? 'Add New Customer' : 'Edit Customer'}
         </DialogTitle>
@@ -1018,7 +1096,7 @@ const Customers: React.FC = () => {
       </Dialog>
 
       {/* View Dialog */}
-      <Dialog open={viewOpen} onClose={handleClose} maxWidth="lg" fullWidth>
+      <Dialog open={viewOpen} onClose={handleClose} maxWidth="lg" fullWidth fullScreen={isMobile}>
         <DialogTitle>Customer Details</DialogTitle>
         <DialogContent>
           {selectedCustomer && (
@@ -1327,7 +1405,7 @@ const Customers: React.FC = () => {
       </Dialog>
 
       {/* Send Email Dialog */}
-      <Dialog open={emailOpen} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={emailOpen} onClose={handleClose} maxWidth="md" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <EmailIcon />
@@ -1375,7 +1453,7 @@ const Customers: React.FC = () => {
       </Dialog>
 
       {/* Send SMS Dialog */}
-      <Dialog open={smsOpen} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={smsOpen} onClose={handleClose} maxWidth="sm" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SmsIcon />
@@ -1416,7 +1494,7 @@ const Customers: React.FC = () => {
       </Dialog>
 
       {/* Communication History Dialog */}
-      <Dialog open={historyOpen} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={historyOpen} onClose={handleClose} maxWidth="md" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <HistoryIcon />
@@ -1495,7 +1573,7 @@ const Customers: React.FC = () => {
       </Dialog>
 
       {/* Purchase & Service History Dialog */}
-      <Dialog open={purchaseHistoryOpen} onClose={() => setPurchaseHistoryOpen(false)} maxWidth="lg" fullWidth>
+      <Dialog open={purchaseHistoryOpen} onClose={() => setPurchaseHistoryOpen(false)} maxWidth="lg" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <DirectionsCarIcon />

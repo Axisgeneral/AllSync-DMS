@@ -485,14 +485,14 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: { xs: 1, sm: 3 }, // Reduced padding on mobile
           width: { sm: `calc(100% - ${sidebarCollapsed ? drawerWidthCollapsed : drawerWidth}px)` },
           minHeight: '100vh',
           bgcolor: 'grey.100',
           transition: 'all 0.3s ease',
         }}
       >
-        <Toolbar />
+        <Toolbar sx={{ minHeight: { xs: '48px', sm: '64px' } }} />
         {children}
       </Box>
     </Box>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, ThemeProvider, useMediaQuery } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import Layout from './components/Layout';
+import mobileTheme from './theme/mobileTheme';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Vehicles from './pages/Vehicles';
@@ -30,6 +32,9 @@ import UserManagement from './pages/UserManagement';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
+  
+  // Detect mobile device
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -59,7 +64,8 @@ function App() {
   }
 
   return (
-    <Layout user={user} onLogout={handleLogout}>
+    <ThemeProvider theme={mobileTheme}>
+      <Layout user={user} onLogout={handleLogout}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -103,6 +109,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
+    </ThemeProvider>
   );
 }
 
