@@ -30,6 +30,9 @@ import EventIcon from '@mui/icons-material/Event';
 import BuildIcon from '@mui/icons-material/Build';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface ServiceAppointment {
   id: number;
@@ -67,6 +70,8 @@ const Service: React.FC = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'add' | 'edit'>('add');
   const [selectedAppointment, setSelectedAppointment] = useState<ServiceAppointment | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuAppointment, setMenuAppointment] = useState<ServiceAppointment | null>(null);
   const [formData, setFormData] = useState<Partial<ServiceAppointment>>({
     customerName: '',
     customerPhone: '',
@@ -295,6 +300,30 @@ const Service: React.FC = () => {
     setSelectedAppointment(null);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, appointment: ServiceAppointment) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuAppointment(appointment);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuAppointment(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
+    if (menuAppointment) {
+      if (action === 'view') {
+        handleViewDetails(menuAppointment);
+      } else if (action === 'edit') {
+        handleOpen('edit', menuAppointment);
+      } else if (action === 'delete') {
+        handleDelete(menuAppointment.id);
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     if (viewMode === 'add') {
       const newAppointment: ServiceAppointment = {
@@ -388,44 +417,16 @@ const Service: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewOpen(params.row as ServiceAppointment);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as ServiceAppointment)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as ServiceAppointment);
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -895,6 +896,32 @@ const Service: React.FC = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Appointment
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Appointment
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
