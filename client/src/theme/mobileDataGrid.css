@@ -1,0 +1,52 @@
+/* Mobile-specific styles for MUI DataGrid */
+/* Applied automatically on screens < 600px */
+
+@media (max-width: 600px) {
+  .MuiDataGrid-root {
+    font-size: 0.75rem;
+  }
+
+  .MuiDataGrid-columnHeaders {
+    font-size: 0.7rem;
+    min-height: 40px !important;
+    max-height: 40px !important;
+  }
+
+  .MuiDataGrid-cell {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    min-height: 36px !important;
+    max-height: 36px !important;
+  }
+
+  .MuiDataGrid-row {
+    min-height: 36px !important;
+    max-height: 36px !important;
+  }
+
+  .MuiDataGrid-columnHeader {
+    padding: 4px 8px;
+  }
+
+  .MuiDataGrid-footerContainer {
+    min-height: 40px;
+  }
+
+  .MuiDataGrid-root .MuiTablePagination-root {
+    font-size: 0.7rem;
+  }
+
+  .MuiDataGrid-root .MuiTablePagination-selectLabel,
+  .MuiDataGrid-root .MuiTablePagination-displayedRows {
+    font-size: 0.7rem;
+    margin: 0;
+  }
+
+  .MuiDataGrid-root .MuiTablePagination-select {
+    font-size: 0.7rem;
+  }
+
+  .MuiDataGrid-root .MuiIconButton-root {
+    padding: 4px;
+  }
+}

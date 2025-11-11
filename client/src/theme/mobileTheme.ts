@@ -12,49 +12,6 @@ export const mobileTheme = createTheme({
     },
   },
   components: {
-    MuiDataGrid: {
-      styleOverrides: {
-        root: {
-          '@media (max-width: 600px)': {
-            fontSize: '0.75rem',
-            '& .MuiDataGrid-columnHeaders': {
-              fontSize: '0.7rem',
-              minHeight: '40px !important',
-              maxHeight: '40px !important',
-            },
-            '& .MuiDataGrid-cell': {
-              fontSize: '0.7rem',
-              padding: '4px 8px',
-              minHeight: '36px !important',
-              maxHeight: '36px !important',
-            },
-            '& .MuiDataGrid-row': {
-              minHeight: '36px !important',
-              maxHeight: '36px !important',
-            },
-            '& .MuiDataGrid-columnHeader': {
-              padding: '4px 8px',
-            },
-            '& .MuiDataGrid-footerContainer': {
-              minHeight: '40px',
-            },
-            '& .MuiTablePagination-root': {
-              fontSize: '0.7rem',
-            },
-            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-              fontSize: '0.7rem',
-              margin: 0,
-            },
-            '& .MuiTablePagination-select': {
-              fontSize: '0.7rem',
-            },
-            '& .MuiIconButton-root': {
-              padding: '4px',
-            },
-          },
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {

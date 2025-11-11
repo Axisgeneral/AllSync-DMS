@@ -49,7 +49,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import EventIcon from '@mui/icons-material/Event';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import { createMobileColumns, MobileColumnPresets, getMobileDialogProps } from '../utils/mobileUtils';
 
 interface Customer {

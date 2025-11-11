@@ -5,6 +5,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import App from './App';
 import { DealsProvider } from './contexts/DealsContext';
 import { CreditApplicationsProvider } from './contexts/CreditApplicationsContext';
+import './theme/mobileDataGrid.css';
 
 const theme = createTheme({
   palette: {
