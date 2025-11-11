@@ -314,7 +314,7 @@ const Service: React.FC = () => {
   const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
     if (menuAppointment) {
       if (action === 'view') {
-        handleViewDetails(menuAppointment);
+        handleViewOpen(menuAppointment);
       } else if (action === 'edit') {
         handleOpen('edit', menuAppointment);
       } else if (action === 'delete') {

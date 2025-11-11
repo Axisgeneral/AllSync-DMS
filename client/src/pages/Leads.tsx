@@ -393,7 +393,7 @@ const Leads: React.FC = () => {
       } else if (action === 'delete') {
         handleDelete(menuLead.id);
       } else if (action === 'convert') {
-        handleConvertOpen(menuLead);
+        handleConvertToCustomer(menuLead);
       } else if (action === 'email') {
         handleOpenEmail(menuLead);
       } else if (action === 'sms') {

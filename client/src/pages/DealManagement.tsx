@@ -372,7 +372,7 @@ const DealManagement: React.FC = () => {
           setOpen(true);
           break;
         case 'return':
-          handleReturnToSales(menuDeal.id);
+          handleReturnToSales(menuDeal);
           break;
         case 'delete':
           handleDelete(menuDeal.id);
