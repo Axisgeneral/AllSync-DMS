@@ -37,6 +37,9 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import PercentIcon from '@mui/icons-material/Percent';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface LendingProgram {
   id: number;
@@ -82,6 +85,8 @@ const LenderManagement: React.FC = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedLender, setSelectedLender] = useState<Lender | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuLender, setMenuLender] = useState<Lender | null>(null);
   const [formData, setFormData] = useState<Partial<Lender>>({
     lenderName: '',
     contactPerson: '',
@@ -417,6 +422,39 @@ const LenderManagement: React.FC = () => {
     setSelectedLender(null);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, lender: Lender) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuLender(lender);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuLender(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
+    if (menuLender) {
+      switch (action) {
+        case 'view':
+          setSelectedLender(menuLender);
+          setMode('view');
+          setViewOpen(true);
+          break;
+        case 'edit':
+          setSelectedLender(menuLender);
+          setFormData(menuLender);
+          setMode('edit');
+          setOpen(true);
+          break;
+        case 'delete':
+          handleDelete(menuLender.id);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     if (mode === 'add') {
       const newLender: Lender = {
@@ -528,44 +566,16 @@ const LenderManagement: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('view', params.row as Lender);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as Lender)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as Lender);
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -998,6 +1008,32 @@ const LenderManagement: React.FC = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Lender
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Lender
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
