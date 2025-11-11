@@ -43,6 +43,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import WarningIcon from '@mui/icons-material/Warning';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface TradeIn {
   id: number;
@@ -88,6 +91,8 @@ const Trades: React.FC = () => {
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedTrade, setSelectedTrade] = useState<TradeIn | null>(null);
   const [tabValue, setTabValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuTrade, setMenuTrade] = useState<TradeIn | null>(null);
   const [formData, setFormData] = useState<Partial<TradeIn>>({
     tradeNumber: '',
     customerName: '',
@@ -342,6 +347,30 @@ const Trades: React.FC = () => {
     setTabValue(0);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, trade: TradeIn) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuTrade(trade);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuTrade(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
+    if (menuTrade) {
+      if (action === 'view') {
+        handleOpen('view', menuTrade);
+      } else if (action === 'edit') {
+        handleOpen('edit', menuTrade);
+      } else if (action === 'delete') {
+        handleDelete(menuTrade.id);
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleClearSearch = () => {
     setSearchQuery('');
   };
@@ -480,44 +509,16 @@ const Trades: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('view', params.row as TradeIn);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as TradeIn)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as TradeIn);
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -1112,6 +1113,40 @@ const Trades: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Trade-In
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Trade-In
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
