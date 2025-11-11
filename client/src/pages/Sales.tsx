@@ -15,7 +15,8 @@ import {
   Chip,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
+import { Add, Edit, Delete, Visibility, MoreVert } from '@mui/icons-material';
+import { Menu, Tooltip, ListItemIcon } from '@mui/material';
 import axios from 'axios';
 
 const Sales: React.FC = () => {
@@ -23,6 +24,8 @@ const Sales: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedSale, setSelectedSale] = useState<any>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuSale, setMenuSale] = useState<any>(null);
   const [formData, setFormData] = useState<any>({
     customerName: '',
     vehicleInfo: '',
@@ -71,6 +74,39 @@ const Sales: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
     setSelectedSale(null);
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, sale: any) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuSale(sale);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuSale(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
+    if (menuSale) {
+      switch (action) {
+        case 'view':
+          setSelectedSale(menuSale);
+          setViewMode('view');
+          setOpen(true);
+          break;
+        case 'edit':
+          setSelectedSale(menuSale);
+          setFormData(menuSale);
+          setViewMode('edit');
+          setOpen(true);
+          break;
+        case 'delete':
+          handleDelete(menuSale.id);
+          break;
+      }
+    }
+    handleMenuClose();
   };
 
   const handleSubmit = async () => {
@@ -125,18 +161,14 @@ const Sales: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 80,
       renderCell: (params: any) => (
         <Box>
-          <IconButton size="small" onClick={() => handleOpen('view', params.row)}>
-            <Visibility fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => handleOpen('edit', params.row)}>
-            <Edit fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => handleDelete(params.row.id)}>
-            <Delete fontSize="small" />
-          </IconButton>
+          <Tooltip title="Actions">
+            <IconButton size="small" onClick={(e) => handleMenuOpen(e, params.row)}>
+              <MoreVert />
+            </IconButton>
+          </Tooltip>
         </Box>
       ),
     },
@@ -270,6 +302,32 @@ const Sales: React.FC = () => {
           )}
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <Visibility fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <Edit fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Sale
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <Delete fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Sale
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
