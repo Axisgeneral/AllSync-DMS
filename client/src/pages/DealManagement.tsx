@@ -41,6 +41,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import ReplyIcon from '@mui/icons-material/Reply';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import { useDeals } from '../contexts/DealsContext';
 
 interface FIProduct {
@@ -97,6 +100,8 @@ const DealManagement: React.FC = () => {
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedDeal, setSelectedDeal] = useState<FIProduct | null>(null);
   const [tabValue, setTabValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuDeal, setMenuDeal] = useState<FIProduct | null>(null);
   const [formData, setFormData] = useState<Partial<FIProduct>>({
     dealNumber: '',
     customerName: '',
@@ -341,6 +346,42 @@ const DealManagement: React.FC = () => {
     setTabValue(0);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, deal: FIProduct) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuDeal(deal);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuDeal(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'return' | 'delete') => {
+    if (menuDeal) {
+      switch (action) {
+        case 'view':
+          setSelectedDeal(menuDeal);
+          setMode('view');
+          setViewOpen(true);
+          break;
+        case 'edit':
+          setSelectedDeal(menuDeal);
+          setFormData(menuDeal);
+          setMode('edit');
+          setOpen(true);
+          break;
+        case 'return':
+          handleReturnToSales(menuDeal.id);
+          break;
+        case 'delete':
+          handleDelete(menuDeal.id);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleClearSearch = () => {
     setSearchQuery('');
   };
@@ -480,56 +521,16 @@ const DealManagement: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 200,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('view', params.row as FIProduct);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as FIProduct)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as FIProduct);
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Return to Sales">
-            <IconButton
-              size="small"
-              color="warning"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleReturnToSales(params.row as FIProduct);
-              }}
-            >
-              <ReplyIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -1029,6 +1030,38 @@ const DealManagement: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Deal
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('return')}>
+          <ListItemIcon>
+            <ReplyIcon fontSize="small" color="warning" />
+          </ListItemIcon>
+          Return to Sales
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Deal
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
