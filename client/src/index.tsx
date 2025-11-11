@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import App from './App';
+import { DealsProvider } from './contexts/DealsContext';
+import { CreditApplicationsProvider } from './contexts/CreditApplicationsContext';
 
 const theme = createTheme({
   palette: {
@@ -27,7 +29,11 @@ root.render(
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <DealsProvider>
+          <CreditApplicationsProvider>
+            <App />
+          </CreditApplicationsProvider>
+        </DealsProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

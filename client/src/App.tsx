@@ -15,6 +15,7 @@ import Trades from './pages/Trades';
 import CreditApplications from './pages/CreditApplications';
 import LenderManagement from './pages/LenderManagement';
 import DealManagement from './pages/DealManagement';
+import PendingCreditApplications from './pages/PendingCreditApplications';
 import ServiceOrders from './pages/ServiceOrders';
 import PartsManagement from './pages/PartsManagement';
 import GLMapping from './pages/GLMapping';
@@ -74,6 +75,7 @@ function App() {
         
         {/* F&I */}
         <Route path="/credit-applications" element={<CreditApplications />} />
+        <Route path="/pending-credit-applications" element={<PendingCreditApplications />} />
         <Route path="/lender-management" element={<LenderManagement />} />
         <Route path="/deal-management" element={<DealManagement />} />
         
