@@ -347,7 +347,11 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth,
+              bgcolor: '#f8f9fa',
+            },
           }}
         >
           {drawer}
@@ -356,7 +360,12 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth,
+              bgcolor: '#f8f9fa',
+              borderRight: '1px solid #e5e7eb',
+            },
           }}
           open
         >
