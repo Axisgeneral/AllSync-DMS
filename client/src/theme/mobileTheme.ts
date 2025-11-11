@@ -140,24 +140,6 @@ export const mobileTheme = createTheme({
         },
       },
     },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          '@media (max-width: 600px)': {
-            '& .MuiToolbar-root': {
-              minHeight: '48px',
-              padding: '0 8px',
-            },
-            '& .MuiTypography-h6': {
-              fontSize: '0.9rem',
-            },
-            '& .MuiTypography-body2': {
-              fontSize: '0.7rem',
-            },
-          },
-        },
-      },
-    },
     MuiDrawer: {
       styleOverrides: {
         paper: {
