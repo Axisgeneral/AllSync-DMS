@@ -812,21 +812,14 @@ const Customers: React.FC = () => {
 
   return (
     <Box sx={{ 
-      p: { xs: 0, sm: 0 },
-      height: { xs: '100vh', sm: 'auto' },
-      display: { xs: 'flex', sm: 'block' },
-      flexDirection: { xs: 'column', sm: 'row' },
-      overflow: { xs: 'hidden', sm: 'visible' },
+      p: { xs: 1, sm: 0 },
     }}>
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         mb: { xs: 0.5, sm: 3 },
-        p: { xs: 1, sm: 0 },
-        flexDirection: { xs: 'row', sm: 'row' },
-        gap: { xs: 0.5, sm: 0 },
-        flexShrink: 0,
+        p: { xs: 0, sm: 0 },
       }}>
         <Typography variant="h4" sx={{ 
           fontWeight: 'bold', 
@@ -961,13 +954,9 @@ const Customers: React.FC = () => {
 
       {/* Customers Data Grid */}
       <Paper sx={{ 
-        height: isMobile ? 'calc(100vh - 140px)' : 500,
-        width: isMobile ? 'calc(100vw - 16px)' : '100%',
-        mx: { xs: 1, sm: 0 },
-        mb: { xs: 1, sm: 0 },
-        p: { xs: 0, sm: 2 },
-        flexGrow: 1,
-        overflow: 'hidden',
+        height: 500,
+        width: '100%',
+        p: { xs: 1, sm: 2 },
       }}>
         <DataGrid
           rows={filteredCustomers}

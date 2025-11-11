@@ -2,18 +2,6 @@
 /* Applied automatically on screens < 600px */
 
 @media (max-width: 600px) {
-  /* Prevent body scroll on mobile but allow DataGrid internal scrolling */
-  html, body {
-    overflow: hidden;
-    height: 100vh;
-    width: 100%;
-  }
-
-  #root {
-    height: 100vh;
-    overflow: hidden;
-  }
-
   .MuiDataGrid-root {
     font-size: 0.7rem;
     border: none;
