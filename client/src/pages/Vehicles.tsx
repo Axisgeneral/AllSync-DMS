@@ -844,6 +844,15 @@ const Vehicles: React.FC = () => {
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
           }}
+          onRowClick={(params) => handleOpen('view', params.row)}
+          sx={{
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+          }}
         />
       </Paper>
 
