@@ -37,8 +37,13 @@ import PeopleIcon from '@mui/icons-material/People';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LockIcon from '@mui/icons-material/Lock';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EmailIcon from '@mui/icons-material/Email';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import SendIcon from '@mui/icons-material/Send';
 import Menu from '@mui/material/Menu';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 interface User {
   id: number;
@@ -59,10 +64,15 @@ const UserManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuUser, setMenuUser] = useState<User | null>(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'info' });
+  const [resetPasswordMethod, setResetPasswordMethod] = useState<'email' | 'manual'>('email');
+  const [newPassword, setNewPassword] = useState('');
+  const [sendInvitation, setSendInvitation] = useState(true);
   const [formData, setFormData] = useState<Partial<User>>({
     username: '',
     email: '',
@@ -227,8 +237,12 @@ const UserManagement: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
     setViewOpen(false);
+    setResetPasswordOpen(false);
     setSelectedUser(null);
     setTabValue(0);
+    setNewPassword('');
+    setResetPasswordMethod('email');
+    setSendInvitation(true);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, user: User) => {
@@ -242,7 +256,7 @@ const UserManagement: React.FC = () => {
     setMenuUser(null);
   };
 
-  const handleMenuAction = (action: 'view' | 'edit' | 'delete') => {
+  const handleMenuAction = (action: 'view' | 'edit' | 'delete' | 'reset' | 'invite') => {
     if (menuUser) {
       if (action === 'view') {
         handleViewOpen(menuUser);
@@ -250,6 +264,11 @@ const UserManagement: React.FC = () => {
         handleOpen(menuUser);
       } else if (action === 'delete') {
         handleDelete(menuUser.id);
+      } else if (action === 'reset') {
+        setSelectedUser(menuUser);
+        setResetPasswordOpen(true);
+      } else if (action === 'invite') {
+        handleSendInvitation(menuUser);
       }
     }
     handleMenuClose();
@@ -260,6 +279,7 @@ const UserManagement: React.FC = () => {
       setUsers(users.map(u => 
         u.id === selectedUser.id ? { ...formData as User, id: u.id } : u
       ));
+      setSnackbar({ open: true, message: 'User updated successfully!', severity: 'success' });
     } else {
       const newUser: User = {
         ...formData as User,
@@ -268,8 +288,66 @@ const UserManagement: React.FC = () => {
         createdDate: new Date().toISOString().split('T')[0],
       };
       setUsers([...users, newUser]);
+      
+      if (sendInvitation) {
+        // Simulate sending invitation email
+        setSnackbar({ 
+          open: true, 
+          message: `User created and invitation email sent to ${formData.email}!`, 
+          severity: 'success' 
+        });
+      } else {
+        setSnackbar({ open: true, message: 'User created successfully!', severity: 'success' });
+      }
     }
     handleClose();
+  };
+
+  const handleSendInvitation = (user: User) => {
+    // Simulate sending invitation email
+    setSnackbar({ 
+      open: true, 
+      message: `Invitation email sent to ${user.email}!`, 
+      severity: 'success' 
+    });
+  };
+
+  const handleResetPassword = () => {
+    if (!selectedUser) return;
+
+    if (resetPasswordMethod === 'email') {
+      // Simulate sending password reset email
+      setSnackbar({ 
+        open: true, 
+        message: `Password reset link sent to ${selectedUser.email}!`, 
+        severity: 'success' 
+      });
+    } else {
+      if (!newPassword || newPassword.length < 8) {
+        setSnackbar({ 
+          open: true, 
+          message: 'Password must be at least 8 characters long!', 
+          severity: 'error' 
+        });
+        return;
+      }
+      // Simulate manual password reset
+      setSnackbar({ 
+        open: true, 
+        message: `Password reset successfully for ${selectedUser.username}!`, 
+        severity: 'success' 
+      });
+    }
+    handleClose();
+  };
+
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setNewPassword(password);
   };
 
   const handleDelete = (id: number) => {
@@ -617,9 +695,117 @@ const UserManagement: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            {!selectedUser && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={sendInvitation}
+                    onChange={(e) => setSendInvitation(e.target.checked)}
+                    icon={<EmailIcon />}
+                    checkedIcon={<EmailIcon />}
+                  />
+                }
+                label="Send invitation email"
+              />
+            )}
+            <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleSubmit} variant="contained" startIcon={!selectedUser && sendInvitation ? <SendIcon /> : undefined}>
+                {selectedUser ? 'Update' : 'Create User'}
+              </Button>
+            </Box>
+          </Box>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordOpen} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Reset Password - {selectedUser?.username}</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              Choose how to reset the password for {selectedUser?.firstName} {selectedUser?.lastName}
+            </Typography>
+            
+            <Box sx={{ mt: 3 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={resetPasswordMethod === 'email'}
+                    onChange={() => setResetPasswordMethod('email')}
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="subtitle2">Send password reset email</Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      User will receive a secure link to reset their password
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={resetPasswordMethod === 'manual'}
+                    onChange={() => setResetPasswordMethod('manual')}
+                  />
+                }
+                label={
+                  <Box>
+                    <Typography variant="subtitle2">Set password manually</Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      Manually set a new password for the user
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Box>
+
+            {resetPasswordMethod === 'manual' && (
+              <Box sx={{ mt: 3 }}>
+                <TextField
+                  fullWidth
+                  label="New Password"
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  helperText="Minimum 8 characters"
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Tooltip title="Generate random password">
+                          <IconButton onClick={generateRandomPassword} edge="end">
+                            <LockResetIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+            )}
+
+            {resetPasswordMethod === 'email' && (
+              <Alert severity="info" sx={{ mt: 3 }}>
+                A password reset link will be sent to: <strong>{selectedUser?.email}</strong>
+              </Alert>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            {selectedUser ? 'Update' : 'Create'}
+          <Button 
+            onClick={handleResetPassword} 
+            variant="contained" 
+            color="warning"
+            startIcon={resetPasswordMethod === 'email' ? <SendIcon /> : <LockResetIcon />}
+          >
+            {resetPasswordMethod === 'email' ? 'Send Reset Link' : 'Reset Password'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -676,7 +862,15 @@ const UserManagement: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
-          <Button variant="outlined" color="warning">
+          <Button 
+            variant="outlined" 
+            color="warning"
+            startIcon={<LockResetIcon />}
+            onClick={() => {
+              setResetPasswordOpen(true);
+              setViewOpen(false);
+            }}
+          >
             Reset Password
           </Button>
         </DialogActions>
@@ -708,6 +902,18 @@ const UserManagement: React.FC = () => {
           </ListItemIcon>
           Edit User
         </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('invite')}>
+          <ListItemIcon>
+            <SendIcon fontSize="small" color="success" />
+          </ListItemIcon>
+          Send Invitation
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('reset')}>
+          <ListItemIcon>
+            <LockResetIcon fontSize="small" color="warning" />
+          </ListItemIcon>
+          Reset Password
+        </MenuItem>
         <MenuItem 
           onClick={() => handleMenuAction('delete')}
           disabled={menuUser?.role === 'Admin'}
@@ -718,6 +924,22 @@ const UserManagement: React.FC = () => {
           Delete User
         </MenuItem>
       </Menu>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
