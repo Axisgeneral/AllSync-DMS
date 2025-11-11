@@ -2,11 +2,10 @@
 /* Applied automatically on screens < 600px */
 
 @media (max-width: 600px) {
-  /* Prevent body scroll on mobile */
+  /* Prevent body scroll on mobile but allow DataGrid internal scrolling */
   html, body {
     overflow: hidden;
     height: 100vh;
-    position: fixed;
     width: 100%;
   }
 
@@ -18,6 +17,20 @@
   .MuiDataGrid-root {
     font-size: 0.7rem;
     border: none;
+  }
+
+  /* Enable virtualized scrolling in DataGrid */
+  .MuiDataGrid-virtualScroller {
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+  }
+
+  .MuiDataGrid-virtualScrollerContent {
+    min-height: auto !important;
+  }
+
+  .MuiDataGrid-virtualScrollerRenderZone {
+    position: relative;
   }
 
   .MuiDataGrid-columnHeaders {
