@@ -431,7 +431,7 @@ const PendingCreditApplications: React.FC = () => {
       {/* Statistics Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -446,7 +446,7 @@ const PendingCreditApplications: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -461,7 +461,7 @@ const PendingCreditApplications: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -476,7 +476,7 @@ const PendingCreditApplications: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card sx={{ cursor: 'pointer', '&:hover': { boxShadow: 4 } }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -528,6 +528,12 @@ const PendingCreditApplications: React.FC = () => {
           }}
           pageSizeOptions={[10, 25, 50, 100]}
           disableRowSelectionOnClick
+          onRowClick={(params) => handleViewOpen(params.row as PendingCreditApplication)}
+          sx={{
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+            },
+          }}
         />
       </Paper>
 
