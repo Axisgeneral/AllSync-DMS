@@ -452,7 +452,17 @@ const Service: React.FC = () => {
       {/* Statistics Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => filteredAppointments.length > 0 && handleViewOpen(filteredAppointments[0])}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -467,7 +477,20 @@ const Service: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const scheduled = filteredAppointments.filter(a => a.status === 'Scheduled');
+              if (scheduled.length > 0) handleViewOpen(scheduled[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -482,7 +505,20 @@ const Service: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const inProgress = filteredAppointments.filter(a => a.status === 'In Progress' || a.status === 'Checked In');
+              if (inProgress.length > 0) handleViewOpen(inProgress[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -497,7 +533,20 @@ const Service: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const completed = filteredAppointments.filter(a => a.status === 'Completed');
+              if (completed.length > 0) handleViewOpen(completed[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -549,6 +598,15 @@ const Service: React.FC = () => {
           }}
           pageSizeOptions={[10, 25, 50, 100]}
           disableRowSelectionOnClick
+          onRowClick={(params) => handleViewOpen(params.row as ServiceAppointment)}
+          sx={{
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+          }}
         />
       </Paper>
 

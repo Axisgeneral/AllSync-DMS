@@ -622,7 +622,17 @@ const ServiceOrders: React.FC = () => {
       {/* Statistics Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => filteredOrders.length > 0 && handleViewOpen(filteredOrders[0])}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -637,7 +647,20 @@ const ServiceOrders: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const openOrders = filteredOrders.filter(o => o.status === 'Open' || o.status === 'In Progress');
+              if (openOrders.length > 0) handleViewOpen(openOrders[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -652,7 +675,20 @@ const ServiceOrders: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const awaitingOrders = filteredOrders.filter(o => o.status === 'Awaiting Approval');
+              if (awaitingOrders.length > 0) handleViewOpen(awaitingOrders[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -667,7 +703,20 @@ const ServiceOrders: React.FC = () => {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
+          <Card 
+            sx={{ 
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              }
+            }}
+            onClick={() => {
+              const completedOrders = filteredOrders.filter(o => o.status === 'Completed' || o.status === 'Invoiced' || o.status === 'Closed');
+              if (completedOrders.length > 0) handleViewOpen(completedOrders[0]);
+            }}
+          >
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
@@ -721,6 +770,15 @@ const ServiceOrders: React.FC = () => {
           }}
           pageSizeOptions={[10, 25, 50, 100]}
           disableRowSelectionOnClick
+          onRowClick={(params) => handleViewOpen(params.row as ServiceOrder)}
+          sx={{
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+          }}
         />
       </Paper>
 
