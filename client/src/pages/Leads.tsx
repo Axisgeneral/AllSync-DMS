@@ -235,16 +235,15 @@ const Leads: React.FC = () => {
     {
       field: 'name',
       headerName: 'Name',
-      width: 180,
+      width: 200,
       valueGetter: (params: any) => `${params.row.firstName} ${params.row.lastName}`,
     },
-    { field: 'email', headerName: 'Email', width: 200 },
-    { field: 'phone', headerName: 'Phone', width: 140 },
-    { field: 'source', headerName: 'Source', width: 120 },
+    { field: 'phone', headerName: 'Phone', width: 150 },
+    { field: 'source', headerName: 'Source', width: 130 },
     {
       field: 'status',
       headerName: 'Status',
-      width: 130,
+      width: 140,
       renderCell: (params: GridRenderCellParams) => (
         <Chip
           label={params.value as string}
@@ -253,11 +252,11 @@ const Leads: React.FC = () => {
         />
       ),
     },
-    { field: 'interest', headerName: 'Interest', width: 140 },
+    { field: 'interest', headerName: 'Interest', width: 150 },
     {
       field: 'score',
       headerName: 'Score',
-      width: 100,
+      width: 110,
       renderCell: (params: GridRenderCellParams) => (
         <Chip
           icon={<StarIcon />}
@@ -267,8 +266,8 @@ const Leads: React.FC = () => {
         />
       ),
     },
-    { field: 'assignedTo', headerName: 'Assigned To', width: 140 },
-    { field: 'lastContact', headerName: 'Last Contact', width: 120 },
+    { field: 'assignedTo', headerName: 'Assigned To', width: 150 },
+    { field: 'lastContact', headerName: 'Last Contact', width: 130 },
     {
       field: 'actions',
       headerName: 'Actions',
