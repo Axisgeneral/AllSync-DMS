@@ -27,6 +27,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import CategoryIcon from '@mui/icons-material/Category';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 interface GLAccount {
   id: number;
@@ -56,6 +59,8 @@ const GLMapping: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'add' | 'edit'>('add');
   const [selectedMapping, setSelectedMapping] = useState<GLMapping | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuMapping, setMenuMapping] = useState<GLMapping | null>(null);
   const [formData, setFormData] = useState<Partial<GLMapping>>({
     transactionType: '',
     category: '',
@@ -241,6 +246,34 @@ const GLMapping: React.FC = () => {
     setSelectedMapping(null);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, mapping: GLMapping) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuMapping(mapping);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuMapping(null);
+  };
+
+  const handleMenuAction = (action: 'edit' | 'delete') => {
+    if (menuMapping) {
+      switch (action) {
+        case 'edit':
+          setSelectedMapping(menuMapping);
+          setFormData(menuMapping);
+          setViewMode('edit');
+          setOpen(true);
+          break;
+        case 'delete':
+          handleDelete(menuMapping.id);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     if (viewMode === 'add') {
       const newMapping: GLMapping = {
@@ -304,32 +337,16 @@ const GLMapping: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 120,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="Edit">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as GLMapping);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as GLMapping)}
             >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -568,6 +585,26 @@ const GLMapping: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Mapping
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Mapping
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
