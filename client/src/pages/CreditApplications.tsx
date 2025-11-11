@@ -36,6 +36,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import CreditScoreIcon from '@mui/icons-material/CreditScore';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import { useCreditApplications } from '../contexts/CreditApplicationsContext';
 
 interface CreditApplication {
@@ -88,6 +91,8 @@ const CreditApplications: React.FC = () => {
   const [mode, setMode] = useState<'add' | 'edit' | 'view'>('add');
   const [selectedApplication, setSelectedApplication] = useState<CreditApplication | null>(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuApplication, setMenuApplication] = useState<CreditApplication | null>(null);
   const [formData, setFormData] = useState<Partial<CreditApplication>>({
     applicationNumber: '',
     customerName: '',
@@ -367,6 +372,42 @@ const CreditApplications: React.FC = () => {
     setActiveStep(0);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, application: CreditApplication) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuApplication(application);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuApplication(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit' | 'submit' | 'delete') => {
+    if (menuApplication) {
+      switch (action) {
+        case 'view':
+          setSelectedApplication(menuApplication);
+          setMode('view');
+          setViewOpen(true);
+          break;
+        case 'edit':
+          setSelectedApplication(menuApplication);
+          setFormData(menuApplication);
+          setMode('edit');
+          setOpen(true);
+          break;
+        case 'submit':
+          handleSubmitToLender(menuApplication);
+          break;
+        case 'delete':
+          handleDelete(menuApplication.id);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     if (mode === 'add') {
       const newApplication: CreditApplication = {
@@ -501,58 +542,16 @@ const CreditApplications: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 200,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('view', params.row as CreditApplication);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as CreditApplication)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen('edit', params.row as CreditApplication);
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          {params.row.status === 'Draft' && (
-            <Tooltip title="Submit to Lender">
-              <IconButton
-                size="small"
-                color="success"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSubmitToLender(params.row as CreditApplication);
-                }}
-              >
-                <SendIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -1199,6 +1198,40 @@ const CreditApplications: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Application
+        </MenuItem>
+        {menuApplication?.status === 'Draft' && (
+          <MenuItem onClick={() => handleMenuAction('submit')}>
+            <ListItemIcon>
+              <SendIcon fontSize="small" color="success" />
+            </ListItemIcon>
+            Submit to Lender
+          </MenuItem>
+        )}
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Application
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
