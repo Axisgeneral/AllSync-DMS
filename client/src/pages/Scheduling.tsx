@@ -49,6 +49,8 @@ const Scheduling: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuSchedule, setMenuSchedule] = useState<Schedule | null>(null);
   const [formData, setFormData] = useState<Partial<Schedule>>({
     employeeId: 0,
     employeeName: '',
@@ -151,6 +153,33 @@ const Scheduling: React.FC = () => {
   const handleClose = () => {
     setOpen(false);
     setSelectedSchedule(null);
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, schedule: Schedule) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuSchedule(schedule);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuSchedule(null);
+  };
+
+  const handleMenuAction = (action: 'edit' | 'delete') => {
+    if (menuSchedule) {
+      switch (action) {
+        case 'edit':
+          setSelectedSchedule(menuSchedule);
+          setFormData(menuSchedule);
+          setOpen(true);
+          break;
+        case 'delete':
+          handleDelete(menuSchedule.id);
+          break;
+      }
+    }
+    handleMenuClose();
   };
 
   const handleSubmit = () => {
@@ -258,32 +287,16 @@ const Scheduling: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="Edit">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen(params.row as Schedule);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as Schedule)}
             >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              color="error"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete(params.row.id);
-              }}
-            >
-              <DeleteIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -520,6 +533,26 @@ const Scheduling: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Schedule
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('delete')}>
+          <ListItemIcon>
+            <DeleteIcon fontSize="small" color="error" />
+          </ListItemIcon>
+          Delete Schedule
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

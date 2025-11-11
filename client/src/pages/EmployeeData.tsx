@@ -61,6 +61,8 @@ const EmployeeData: React.FC = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [tabValue, setTabValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuEmployee, setMenuEmployee] = useState<Employee | null>(null);
   const [formData, setFormData] = useState<Partial<Employee>>({
     firstName: '',
     lastName: '',
@@ -252,6 +254,34 @@ const EmployeeData: React.FC = () => {
     setTabValue(0);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, employee: Employee) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuEmployee(employee);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuEmployee(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit') => {
+    if (menuEmployee) {
+      switch (action) {
+        case 'view':
+          setSelectedEmployee(menuEmployee);
+          setViewOpen(true);
+          break;
+        case 'edit':
+          setSelectedEmployee(menuEmployee);
+          setFormData(menuEmployee);
+          setOpen(true);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     if (selectedEmployee) {
       setEmployees(employees.map(e => 
@@ -315,32 +345,16 @@ const EmployeeData: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewOpen(params.row as Employee);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as Employee)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen(params.row as Employee);
-              }}
-            >
-              <EditIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -734,6 +748,26 @@ const EmployeeData: React.FC = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Employee
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

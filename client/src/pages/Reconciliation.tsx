@@ -72,6 +72,8 @@ const Reconciliation: React.FC = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedRecon, setSelectedRecon] = useState<Reconciliation | null>(null);
   const [tabValue, setTabValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuRecon, setMenuRecon] = useState<Reconciliation | null>(null);
   const [formData, setFormData] = useState<Partial<Reconciliation>>({
     accountName: '',
     accountNumber: '',
@@ -217,6 +219,34 @@ const Reconciliation: React.FC = () => {
     setTabValue(0);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, recon: Reconciliation) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuRecon(recon);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuRecon(null);
+  };
+
+  const handleMenuAction = (action: 'view' | 'edit') => {
+    if (menuRecon) {
+      switch (action) {
+        case 'view':
+          setSelectedRecon(menuRecon);
+          setViewOpen(true);
+          break;
+        case 'edit':
+          setSelectedRecon(menuRecon);
+          setFormData(menuRecon);
+          setOpen(true);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   const handleSubmit = () => {
     const difference = formData.bookBalance! - formData.statementEndingBalance!;
     const newRecon: Reconciliation = {
@@ -315,32 +345,16 @@ const Reconciliation: React.FC = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 120,
+      width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box>
-          <Tooltip title="View Details">
+          <Tooltip title="Actions">
             <IconButton
               size="small"
-              color="info"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewOpen(params.row as Reconciliation);
-              }}
+              onClick={(e) => handleMenuOpen(e, params.row as Reconciliation)}
             >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen(params.row as Reconciliation);
-              }}
-            >
-              <EditIcon fontSize="small" />
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Box>
@@ -706,6 +720,26 @@ const Reconciliation: React.FC = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuAction('edit')}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          Edit Reconciliation
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

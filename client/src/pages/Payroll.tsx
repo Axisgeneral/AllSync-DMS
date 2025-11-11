@@ -62,6 +62,8 @@ const Payroll: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewOpen, setViewOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<PayrollEntry | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuEntry, setMenuEntry] = useState<PayrollEntry | null>(null);
 
   // Mock data
   useEffect(() => {
@@ -177,6 +179,24 @@ const Payroll: React.FC = () => {
     setViewOpen(true);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, entry: PayrollEntry) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setMenuEntry(entry);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuEntry(null);
+  };
+
+  const handleMenuAction = (action: 'view') => {
+    if (menuEntry) {
+      handleViewOpen(menuEntry);
+    }
+    handleMenuClose();
+  };
+
   const handleClose = () => {
     setViewOpen(false);
     setSelectedEntry(null);
@@ -257,16 +277,12 @@ const Payroll: React.FC = () => {
       width: 80,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
-        <Tooltip title="View Details">
+        <Tooltip title="Actions">
           <IconButton
             size="small"
-            color="info"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleViewOpen(params.row as PayrollEntry);
-            }}
+            onClick={(e) => handleMenuOpen(e, params.row as PayrollEntry)}
           >
-            <VisibilityIcon fontSize="small" />
+            <MoreVertIcon />
           </IconButton>
         </Tooltip>
       ),
@@ -487,6 +503,20 @@ const Payroll: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleMenuAction('view')}>
+          <ListItemIcon>
+            <VisibilityIcon fontSize="small" color="info" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };
